@@ -71,22 +71,24 @@
         <table class='entities'>
           <thead>
             <tr>
-              <th>Device</th>
-              <th>Type</th>
+              <th>Service</th>
+              <th>Device Name</th>
               <th>Status</th>
               <th>State</th>
+              <th>Location</th>
             </tr>
           </thead>
             <tr hidden$='[[!computeShowEntitiesPlaceholder(_entities)]]'>
-              <td colspan="4">No devices loaded yet</td>
+              <td colspan="5">No devices loaded yet</td>
             </tr>
           <tbody>
             <template is='dom-repeat' items='[[_entities]]' as='entity'>
               <tr on-click='entitySelected'>
-                <td>[[entity.friendly_name]]</td>
                 <td>[[entity.platform]]</td>
+                <td>[[entity.friendly_name]]</td>
                 <td>[[entity.status]]</td>
                 <td>[[entity.state]]</td>
+                <td>[[_formatList(entity.areas)]]</td>
               </tr>
             </template>
           </tbody>
@@ -190,6 +192,10 @@ class HaPanelDevices extends window.hassMixins.EventsMixin(Polymer.Element) {
 
   computeShowEntitiesPlaceholder(_entities) {
     return _entities.length === 0;
+  }
+
+  _formatList(list) {
+    return list.join(', ')
   }
 }
 
