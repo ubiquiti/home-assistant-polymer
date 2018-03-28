@@ -142,7 +142,7 @@ class HaPanelDevices extends window.hassMixins.EventsMixin(Polymer.Element) {
 
       _entities: {
         type: Array,
-        computed: 'computeEntities(hass, _entitiesMaster, _entitiesMaster.splices, _entitiesFilter)',
+        computed: 'computeEntities(hass, _entitiesMaster, _entitiesFilter)',
       },
     };
   }
@@ -158,32 +158,18 @@ class HaPanelDevices extends window.hassMixins.EventsMixin(Polymer.Element) {
     ev.preventDefault();
   }
 
-  _loadEntities(hass) {
+  _loadEntities() {
     this.hass.callApi('get', 'devices/filtered_list')
       .then((devices) => {
-        devices = JSON.parse(devices)
-        // https://www.polymer-project.org/2.0/docs/devguide/model-data#array-mutation
-        // Calls "this.splice('_entitiesMaster', 0, 1000000, device1, device2, ...)"
-        // There is definitely a better way to do this!!
-        devices.unshift(100000)
-        devices.unshift(0)
-        devices.unshift('_entitiesMaster')
-        this.splice.apply(this, devices)
+        this._entitiesMaster = devices
       });
   }
 
-  computeEntities(hass, _entitiesMaster, _entitiesMasterSplices, _entitiesFilter) {
-    /* Observing changes to arrays is either really hard, or I'm not reading docs right...
-       This ugly bit of assignment is to get the data from the array. Just watching
-       "_entitiesMaster" doesn't seem to work. */
-    var data
-    if (!_entitiesMasterSplices || ! _entitiesMasterSplices.indexSplices.length) {
-      data = _entitiesMaster || []
-    } else {
-      data = _entitiesMasterSplices.indexSplices[0].object.slice()
-    }
-
-    data.filter(function (value) {
+  computeEntities(hass, _entitiesMaster, _entitiesFilter) {
+    var data = _entitiesMaster.map(function(value) {
+      // Do some manipulation here
+      return value
+    }).filter(function (value) {
       // check _entitiesFilter
       return true
     })
