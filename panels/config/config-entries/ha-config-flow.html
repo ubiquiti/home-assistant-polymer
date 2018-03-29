@@ -176,7 +176,6 @@ class HaConfigFlow extends window.hassMixins.EventsMixin(Polymer.Element) {
 
   _openUrlAndSubmit() {
     window.open(this.step.url);
-    console.log(this.stepChanged)
     if (this.stepChanged) {
       this.stepChanged = false;
       this.hass.callApi('post', `config/config_entries/flow/${this.flowId}`, {})
