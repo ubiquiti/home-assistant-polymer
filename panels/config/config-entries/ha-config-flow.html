@@ -38,6 +38,9 @@
         <template is='dom-if' if='[[_equals(step.type, "form")]]'>
           [[step.title]]
         </template>
+        <template is='dom-if' if='[[_equals(step.type, "webpage")]]'>
+          [[step.title]]
+        </template>
       </h2>
       <paper-dialog-scrollable>
         <template is='dom-if' if='[[!step]]'>
@@ -67,6 +70,16 @@
               error='[[step.errors]]'
             ></ha-form>
           </template>
+
+          <template is='dom-if' if='[[_equals(step.type, "webpage")]]'>
+            <template is='dom-if' if='[[step.description]]'>
+              <ha-markdown content='[[step.description]]'></ha-markdown>
+            </template>
+
+            <template is='dom-if' if='[[step.errors.base]]'>
+              <div class='error'>[[step.errors.base]]</div>
+            </template>
+          </template>
         </template>
       </paper-dialog-scrollable>
       <div class='buttons'>
@@ -78,6 +91,9 @@
         </template>
         <template is='dom-if' if='[[_equals(step.type, "form")]]'>
           <paper-button on-click='_submitStep'>Submit</paper-button>
+        </template>
+        <template is='dom-if' if='[[_equals(step.type, "webpage")]]'>
+          <paper-button on-click='_openUrlAndSubmit'>Go to site</paper-button>
         </template>
       </div>
     </paper-dialog>
@@ -142,6 +158,15 @@ class HaConfigFlow extends window.hassMixins.EventsMixin(Polymer.Element) {
         // Don't do it on each step or else the dialog keeps bouncing.
         setTimeout(() => this.$.dialog.center(), 0);
       });
+  }
+
+  _openUrlAndSubmit() {
+    window.open(this.step.url);
+    if (!self.clicked) {
+      self.clicked = true;
+      this.hass.callApi('post', `config/config_entries/flow/${this.flowId}`, {})
+        .then(step => this._processStep(step));
+    }
   }
 
   _submitStep() {
