@@ -125,6 +125,10 @@ class HaConfigFlow extends window.hassMixins.EventsMixin(Polymer.Element) {
         type: String,
         observer: '_flowIdChanged'
       },
+      stepChanged: {
+        type: Boolean,
+        value: true
+      },
       /*
        * Store user entered data.
        */
@@ -172,8 +176,8 @@ class HaConfigFlow extends window.hassMixins.EventsMixin(Polymer.Element) {
 
   _openUrlAndSubmit() {
     window.open(this.step.url);
-    if (!self.clicked) {
-      self.clicked = true;
+    if (this.stepChanged) {
+      this.stepChanged = false;
       this.hass.callApi('post', `config/config_entries/flow/${this.flowId}`, {})
         .then(step => this._processStep(step));
     }
@@ -185,6 +189,7 @@ class HaConfigFlow extends window.hassMixins.EventsMixin(Polymer.Element) {
   }
 
   _processStep(step) {
+    this.stepChanged = true
     if (!step.errors) step.errors = {};
     this.step = step;
     // We got a new form if there are no errors.
