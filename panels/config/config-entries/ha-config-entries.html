@@ -31,25 +31,9 @@
       }
     </style>
 
-    <hass-subpage title='Integrations'>
-      <template is='dom-if' if='[[_progress.length]]'>
-        <ha-config-section is-wide='[[isWide]]'>
-          <span slot='header'>Available Services</span>
-          <paper-card>
-            <template is='dom-repeat' items='[[_progress]]'>
-              <div class='config-entry-row'>
-                <paper-item-body>
-                  [[_computeIntegrationTitle(item.domain)]]
-                </paper-item-body>
-                <paper-button on-click='_continueFlow'>Configure</paper-button>
-              </div>
-            </template>
-          </paper-card>
-        </ha-config-section>
-      </template>
-
+    <hass-subpage title='Services'>
       <ha-config-section is-wide='[[isWide]]'>
-        <span slot='header'>Active Services</span>
+        <span slot='header'>Active</span>
         <paper-card>
           <template is='dom-if' if='[[!_entries.length]]'>
             <div class='config-entry-row'>
@@ -60,27 +44,40 @@
           </template>
           <template is='dom-repeat' items='[[_entries]]'>
             <div class='config-entry-row'>
-              <paper-item-body three-line>
+              <paper-item-body two-line>
                 [[item.title]]
-                <div secondary>Integration: [[_computeIntegrationTitle(item.domain)]]</div>
-                <div secondary>Added by: [[item.source]]</div>
-                <div secondary>State: [[item.state]]</div>
+                <div secondary>[[_computeIntegrationTitle(item.domain)]]</div>
               </paper-item-body>
               <paper-button on-click='_removeEntry'>Remove</paper-button>
             </div>
           </template>
         </paper-card>
       </ha-config-section>
+      <template is='dom-if' if='[[_progress.length]]'>
+        <ha-config-section is-wide='[[isWide]]'>
+          <span slot='header'>Discovered</span>
+          <paper-card>
+            <template is='dom-repeat' items='[[_progress]]'>
+              <div class='config-entry-row'>
+                <paper-item-body>
+                  [[_computeIntegrationTitle(item.domain)]]
+                </paper-item-body>
+                <paper-button on-click='_continueFlow'>Continue Setup</paper-button>
+              </div>
+            </template>
+          </paper-card>
+        </ha-config-section>
+      </template>
 
       <ha-config-section is-wide='[[isWide]]'>
-        <span slot='header'>Other Services (manual configuration)</span>
+        <span slot='header'>All Supported</span>
         <paper-card>
           <template is='dom-repeat' items='[[_handlers]]'>
             <div class='config-entry-row'>
               <paper-item-body>
                 [[_computeIntegrationTitle(item)]]
               </paper-item-body>
-              <paper-button on-click='_createFlow'>Configure</paper-button>
+              <paper-button on-click='_createFlow'>Start Setup</paper-button>
             </div>
           </template>
         </paper-card>
