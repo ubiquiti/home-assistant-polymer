@@ -1,0 +1,189 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
+
+<link rel="import" href="../../bower_components/app-layout/app-header-layout/app-header-layout.html">
+<link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
+
+<link rel="import" href="../../src/components/ha-menu-button.html">
+<link rel="import" href="../../src/components/entity/ha-entity-picker.html">
+<link rel="import" href="../../src/resources/ha-style.html">
+
+<dom-module id="ha-panel-devices">
+  <template>
+    <style include="ha-style">
+      :host {
+        -ms-user-select: initial;
+        -webkit-user-select: initial;
+        -moz-user-select: initial;
+      }
+
+      .entities {
+        border-collapse: collapse;
+        width: 100%;
+      }
+
+      .entities thead {
+        border-bottom: 4px solid #000;
+        text-align: left;
+      }
+
+      .entities th,tr,td {
+        padding: .3em 1em;
+      }
+
+      .entities tbody tr {
+        vertical-align: top;
+        cursor: pointer;
+      }
+
+      .entities tbody tr:nth-child(odd) {
+        background-color: var(--table-row-background-color, #fff)
+      }
+
+      .entities tbody tr:nth-child(even) {
+        background-color: var(--table-row-alternative-background-color, #eee)
+      }
+
+      .entities tbody tr:hover:nth-child(n + 1) {
+        background-color: #d5e4ed;
+      }
+
+      .entities td:nth-child(5) {
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+    </style>
+
+    <app-header-layout has-scrolling-region>
+      <app-header slot="header" fixed>
+        <app-toolbar>
+          <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
+          <div main-title>Devices</div>
+        </app-toolbar>
+      </app-header>
+
+      <div class='content'>
+        <table class='entities'>
+          <thead>
+            <tr>
+              <th>Service</th>
+              <th>Device Name</th>
+              <th>Status</th>
+              <th>State</th>
+              <th>Location</th>
+            </tr>
+          </thead>
+            <tr hidden$='[[!computeShowEntitiesPlaceholder(_entities)]]'>
+              <td colspan="5">No devices loaded yet</td>
+            </tr>
+          <tbody>
+            <template is='dom-repeat' items='[[_entities]]' as='entity'>
+              <tr on-click='entitySelected'>
+                <td>[[entity.platform]]</td>
+                <td>[[entity.friendly_name]]</td>
+                <td>[[entity.status]]</td>
+                <td>[[entity.state]]</td>
+                <td>[[_formatList(entity.areas)]]</td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+      </div>
+    </app-header-layout>
+  </template>
+</dom-module>friendly_name
+
+
+
+<script>
+class HaPanelDevices extends window.hassMixins.EventsMixin(Polymer.Element) {
+  static get is() { return 'ha-panel-devices'; }
+
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
+      },
+
+      narrow: {
+        type: Boolean,
+        value: false,
+      },
+
+      showMenu: {
+        type: Boolean,
+        value: false,
+      },
+
+      _entityId: {
+        type: String,
+        value: '',
+      },
+
+      _entitiesFilter: {
+        type: String,
+        value: '',
+      },
+
+      _state: {
+        type: String,
+        value: '',
+      },
+
+      _entitiesMaster: {
+        type: Array,
+        value: [],
+      },
+
+      _entities: {
+        type: Array,
+        computed: 'computeEntities(hass, _entitiesMaster, _entitiesFilter)',
+      },
+    };
+  }
+
+  ready() {
+    super.ready();
+    this._loadEntities();
+  }
+
+  entitySelected(ev) {
+    var entity = ev.model.entity;
+    this.fire('hass-more-info', { entityId: entity.entity_id });
+    ev.preventDefault();
+  }
+
+  _loadEntities() {
+    this.hass.callApi('get', 'devices/filtered_list')
+      .then((devices) => {
+        this._entitiesMaster = devices
+      });
+  }
+
+  computeEntities(hass, _entitiesMaster, _entitiesFilter) {
+    var data = _entitiesMaster.map(function(value) {
+      // Do some manipulation here
+      return value
+    }).filter(function (value) {
+      // check _entitiesFilter
+      return true
+    })
+    return data
+  }
+
+  computeShowEntitiesPlaceholder(_entities) {
+    return _entities.length === 0;
+  }
+
+  _formatList(list) {
+    return list.join(', ')
+  }
+}
+
+customElements.define(HaPanelDevices.is, HaPanelDevices);
+</script>
