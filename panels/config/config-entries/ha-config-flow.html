@@ -35,8 +35,14 @@
         <template is='dom-if' if='[[_equals(step.type, "create_entry")]]'>
           Success!
         </template>
+        <template is='dom-if' if='[[_equals(step.type, "finish")]]'>
+          That's a wrap!
+        </template>
         <template is='dom-if' if='[[_equals(step.type, "form")]]'>
           [[_computeStepTitle(localize, step)]]
+        </template>
+        <template is='dom-if' if='[[_equals(step.type, "webpage")]]'>
+          [[step.title]]
         </template>
       </h2>
       <paper-dialog-scrollable>
@@ -50,6 +56,10 @@
 
           <template is='dom-if' if='[[_equals(step.type, "create_entry")]]'>
             <p>Created config for [[step.title]]</p>
+          </template>
+
+          <template is='dom-if' if='[[_equals(step.type, "finish")]]'>
+            <p>Setup complete for [[step.title]].  You can set the location for your device(s) on your home model dashboard.</p>
           </template>
 
           <template is='dom-if' if='[[_equals(step.type, "form")]]'>
@@ -69,6 +79,16 @@
               compute-error='[[_computeErrorCallback(localize, step)]]'
             ></ha-form>
           </template>
+
+          <template is='dom-if' if='[[_equals(step.type, "webpage")]]'>
+            <template is='dom-if' if='[[step.description]]'>
+              <ha-markdown content='[[step.description]]'></ha-markdown>
+            </template>
+
+            <template is='dom-if' if='[[step.errors.base]]'>
+              <div class='error'>[[step.errors.base]]</div>
+            </template>
+          </template>
         </template>
       </paper-dialog-scrollable>
       <div class='buttons'>
@@ -78,8 +98,14 @@
         <template is='dom-if' if='[[_equals(step.type, "create_entry")]]'>
           <paper-button on-click='_flowDone'>Close</paper-button>
         </template>
+        <template is='dom-if' if='[[_equals(step.type, "finish")]]'>
+          <paper-button on-click='_flowDone'>Close</paper-button>
+        </template>
         <template is='dom-if' if='[[_equals(step.type, "form")]]'>
-          <paper-button on-click='_submitStep'>Submit</paper-button>
+          <paper-button on-click='_submitStep'>Next</paper-button>
+        </template>
+        <template is='dom-if' if='[[_equals(step.type, "webpage")]]'>
+          <paper-button on-click='_openUrlAndSubmit'>Go to site</paper-button>
         </template>
       </div>
     </paper-dialog>
@@ -105,6 +131,10 @@ class HaConfigFlow extends
       flowId: {
         type: String,
         observer: '_flowIdChanged'
+      },
+      stepChanged: {
+        type: Boolean,
+        value: true
       },
       /*
        * Store user entered data.
@@ -151,12 +181,22 @@ class HaConfigFlow extends
       });
   }
 
+  _openUrlAndSubmit() {
+    window.open(this.step.url);
+    if (this.stepChanged) {
+      this.stepChanged = false;
+      this.hass.callApi('post', `config/config_entries/flow/${this.flowId}`, {})
+        .then(step => this._processStep(step));
+    }
+  }
+
   _submitStep() {
     this.hass.callApi('post', `config/config_entries/flow/${this.flowId}`, this.stepData)
       .then(step => this._processStep(step));
   }
 
   _processStep(step) {
+    this.stepChanged = true
     if (!step.errors) step.errors = {};
     this.step = step;
     // We got a new form if there are no errors.

@@ -24,13 +24,16 @@
       paper-card:last-child {
         margin-top: 12px;
       }
+      paper-item-body {
+        font-weight: 500;
+      }
       .config-entry-row {
         display: flex;
         padding: 0 16px;
       }
     </style>
 
-    <hass-subpage header='Integrations'>
+    <hass-subpage title='Services'>
       <template is='dom-if' if='[[_progress.length]]'>
         <ha-config-section is-wide='[[isWide]]'>
           <span slot='header'>In Progress</span>
@@ -46,9 +49,8 @@
           </paper-card>
         </ha-config-section>
       </template>
-
       <ha-config-section is-wide='[[isWide]]'>
-        <span slot='header'>Configured</span>
+        <span slot='header'>Active</span>
         <paper-card>
           <template is='dom-if' if='[[!_entries.length]]'>
             <div class='config-entry-row'>
@@ -206,6 +208,9 @@
       return localize(`component.${integration}.config.title`);
     }
   }
+  String.prototype.toProperCase = function () {
+      return this.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+  };
 
   customElements.define(HaConfigManager.is, HaConfigManager);
 }
