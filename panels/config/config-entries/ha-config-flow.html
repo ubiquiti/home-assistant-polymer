@@ -183,6 +183,7 @@ class HaConfigFlow extends
 
   _openUrlAndSubmit() {
     window.open(this.step.url);
+    // Open the url on every click, but only submit the data once
     if (this.stepChanged) {
       this.stepChanged = false;
       this.hass.callApi('post', `config/config_entries/flow/${this.flowId}`, {})
