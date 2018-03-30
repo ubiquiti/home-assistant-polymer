@@ -33,7 +33,7 @@
       }
     </style>
 
-    <hass-subpage title='Services'>
+    <hass-subpage header='Integrations'>
       <template is='dom-if' if='[[_progress.length]]'>
         <ha-config-section is-wide='[[isWide]]'>
           <span slot='header'>In Progress</span>
@@ -49,8 +49,9 @@
           </paper-card>
         </ha-config-section>
       </template>
+
       <ha-config-section is-wide='[[isWide]]'>
-        <span slot='header'>Active</span>
+        <span slot='header'>Configured</span>
         <paper-card>
           <template is='dom-if' if='[[!_entries.length]]'>
             <div class='config-entry-row'>
