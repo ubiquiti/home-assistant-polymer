@@ -63,7 +63,7 @@
           </template>
 
           <template is='dom-if' if='[[_equals(step.type, "form")]]'>
-            <template is='dom-if' if='[[_computeStepDescription(localize, step)]]'>
+            <template is='dom-if' if='[[step.description]]'>
               <ha-markdown content='[[_computeStepDescription(localize, step)]]'></ha-markdown>
             </template>
 
@@ -82,11 +82,11 @@
 
           <template is='dom-if' if='[[_equals(step.type, "webpage")]]'>
             <template is='dom-if' if='[[step.description]]'>
-              <ha-markdown content='[[step.description]]'></ha-markdown>
+              <ha-markdown content='[[_computeStepDescription(localize, step)]]'></ha-markdown>
             </template>
 
             <template is='dom-if' if='[[step.errors.base]]'>
-              <div class='error'>[[step.errors.base]]</div>
+              <div class='error'>[[_computeBaseError(localize, step)]]</div>
             </template>
           </template>
         </template>
