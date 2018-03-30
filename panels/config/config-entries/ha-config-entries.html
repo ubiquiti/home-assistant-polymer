@@ -32,6 +32,21 @@
     </style>
 
     <hass-subpage title='Services'>
+      <template is='dom-if' if='[[_progress.length]]'>
+        <ha-config-section is-wide='[[isWide]]'>
+          <span slot='header'>Discovered</span>
+          <paper-card>
+            <template is='dom-repeat' items='[[_progress]]'>
+              <div class='config-entry-row'>
+                <paper-item-body>
+                  [[_computeIntegrationTitle(item.domain)]]
+                </paper-item-body>
+                <paper-button on-click='_continueFlow'>Continue Setup</paper-button>
+              </div>
+            </template>
+          </paper-card>
+        </ha-config-section>
+      </template>
       <ha-config-section is-wide='[[isWide]]'>
         <span slot='header'>Active</span>
         <paper-card>
@@ -53,21 +68,6 @@
           </template>
         </paper-card>
       </ha-config-section>
-      <template is='dom-if' if='[[_progress.length]]'>
-        <ha-config-section is-wide='[[isWide]]'>
-          <span slot='header'>Discovered</span>
-          <paper-card>
-            <template is='dom-repeat' items='[[_progress]]'>
-              <div class='config-entry-row'>
-                <paper-item-body>
-                  [[_computeIntegrationTitle(item.domain)]]
-                </paper-item-body>
-                <paper-button on-click='_continueFlow'>Continue Setup</paper-button>
-              </div>
-            </template>
-          </paper-card>
-        </ha-config-section>
-      </template>
 
       <ha-config-section is-wide='[[isWide]]'>
         <span slot='header'>All Supported</span>
