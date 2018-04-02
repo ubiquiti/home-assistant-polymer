@@ -38,11 +38,8 @@
         <template is='dom-if' if='[[_equals(step.type, "finish")]]'>
           That's a wrap!
         </template>
-        <template is='dom-if' if='[[_equals(step.type, "form")]]'>
+        <template is='dom-if' if='[[_equalsAny(step.type, "form", "webpage")]]'>
           [[_computeStepTitle(localize, step)]]
-        </template>
-        <template is='dom-if' if='[[_equals(step.type, "webpage")]]'>
-          [[step.title]]
         </template>
       </h2>
       <paper-dialog-scrollable>
@@ -62,7 +59,7 @@
             <p>Setup complete for [[step.title]].  You can set the location for your device(s) on your home model dashboard.</p>
           </template>
 
-          <template is='dom-if' if='[[_equals(step.type, "form")]]'>
+          <template is='dom-if' if='[[_equalsAny(step.type, "form", "webpage")]]'>
             <template is='dom-if' if='[[_computeStepDescription(localize, step)]]'>
               <ha-markdown content='[[_computeStepDescription(localize, step)]]'></ha-markdown>
             </template>
@@ -71,25 +68,18 @@
               <div class='error'>[[_computeBaseError(localize, step)]]</div>
             </template>
 
-            <ha-form
-              data='{{stepData}}'
-              schema='[[step.data_schema]]'
-              error='[[step.errors]]'
-              compute-label='[[_computeLabelCallback(localize, step)]]'
-              compute-error='[[_computeErrorCallback(localize, step)]]'
-            ></ha-form>
-          </template>
-
-          <template is='dom-if' if='[[_equals(step.type, "webpage")]]'>
-            <template is='dom-if' if='[[_computeStepDescription(localize, step)]]'>
-              <ha-markdown content='[[_computeStepDescription(localize, step)]]'></ha-markdown>
-            </template>
-
-            <template is='dom-if' if='[[step.errors.base]]'>
-              <div class='error'>[[_computeBaseError(localize, step)]]</div>
+            <template is='dom-if' if='[[_equals(step.type, "form")]]'>
+              <ha-form
+                data='{{stepData}}'
+                schema='[[step.data_schema]]'
+                error='[[step.errors]]'
+                compute-label='[[_computeLabelCallback(localize, step)]]'
+                compute-error='[[_computeErrorCallback(localize, step)]]'
+              ></ha-form>
             </template>
           </template>
         </template>
+
       </paper-dialog-scrollable>
       <div class='buttons'>
         <template is='dom-if' if='[[_equals(step.type, "abort")]]'>
@@ -214,6 +204,10 @@ class HaConfigFlow extends
 
   _equals(a, b) {
     return a === b;
+  }
+
+  _equalsAny(a, b, c) {
+    return a === b || a === c;
   }
 
   _openedChanged(ev) {
