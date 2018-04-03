@@ -51,11 +51,7 @@
             <p>[[_computeStepAbortedReason(localize, step)]]</p>
           </template>
 
-          <template is='dom-if' if='[[_equals(step.type, "create_entry")]]'>
-            <p>Created config for [[step.title]]</p>
-          </template>
-
-          <template is='dom-if' if='[[_equals(step.type, "finish")]]'>
+          <template is='dom-if' if='[[_equalsAny(step.type, "create_entry", "finish")]]'>
             <p>Setup complete for [[step.title]].  You can set the location for your device(s) on your home model dashboard.</p>
           </template>
 
